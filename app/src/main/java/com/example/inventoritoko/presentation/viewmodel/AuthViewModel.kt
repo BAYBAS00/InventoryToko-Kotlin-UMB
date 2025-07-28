@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
+import android.util.Log
 
 class AuthViewModel(private val context: Context) : ViewModel() {
 
@@ -32,6 +33,7 @@ class AuthViewModel(private val context: Context) : ViewModel() {
 
     private val apiService = RetrofitClient.getApiService(context)
     private val gson = Gson()
+    private val TAG = "AuthViewModel"
 
     fun login(request: LoginRequest) {
         _loginState.value = AuthResult.Loading
@@ -44,15 +46,20 @@ class AuthViewModel(private val context: Context) : ViewModel() {
                         context.dataStore.edit { preferences ->
                             preferences[stringPreferencesKey(Constants.AUTH_TOKEN)] = token
                         }
+                        Log.d(TAG, "Token saved successfully: $token") // LOGGING TOKEN SAVE
+                    } ?: run {
+                        Log.w(TAG, "Login successful but no token received in response.")
                     }
                     _loginState.value = AuthResult.Success(authResponse?.message ?: "Login successful")
                 } else {
                     val errorBodyString = response.errorBody()?.string()
                     val errorMessage = parseAndFormatErrorMessage(errorBodyString)
+                    Log.e(TAG, "Login failed: $errorMessage")
                     _loginState.value = AuthResult.Error(errorMessage)
                 }
             } catch (e: Exception) {
                 val errorMessage = parseAndFormatErrorMessage(e.message)
+                Log.e(TAG, "Login network error: $errorMessage", e)
                 _loginState.value = AuthResult.Error(errorMessage)
             }
         }

@@ -12,6 +12,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
+import android.util.Log
 
 // DataStore untuk menyimpan token
 val Context.dataStore by preferencesDataStore(name = "auth_prefs")
@@ -19,6 +20,7 @@ val Context.dataStore by preferencesDataStore(name = "auth_prefs")
 object RetrofitClient {
 
     private var INSTANCE: ApiService? = null
+    private const val TAG = "RetrofitClient"
 
     fun getApiService(context: Context): ApiService {
         if (INSTANCE == null) {
@@ -35,9 +37,13 @@ object RetrofitClient {
                         val token = runBlocking {
                             context.dataStore.data.first()[stringPreferencesKey(Constants.AUTH_TOKEN)]
                         }
+                        Log.d(TAG, "Retrieved token from DataStore: $token")
                         val requestBuilder = originalRequest.newBuilder()
                         token?.let {
                             requestBuilder.header("Authorization", "Bearer $it")
+                            Log.d(TAG, "Adding Authorization header: Bearer $it") // LOGGING HEADER
+                        } ?: run {
+                            Log.w(TAG, "No token found in DataStore. Authorization header not added.")
                         }
                         chain.proceed(requestBuilder.build())
                     }

@@ -21,6 +21,7 @@ import com.example.inventoritoko.data.model.CartItem
 import com.example.inventoritoko.presentation.navigation.Screen
 import com.example.inventoritoko.presentation.viewmodel.InventoryViewModel
 import com.example.inventoritoko.presentation.viewmodel.InventoryViewModelFactory
+import com.example.inventoritoko.utils.formatCurrency
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

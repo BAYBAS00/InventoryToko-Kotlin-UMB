@@ -28,6 +28,7 @@ import com.example.inventoritoko.presentation.viewmodel.AuthViewModelFactory
 import com.example.inventoritoko.presentation.viewmodel.InventoryViewModel
 import com.example.inventoritoko.presentation.viewmodel.InventoryViewModelFactory
 import com.example.inventoritoko.utils.Constants
+import com.example.inventoritoko.utils.formatCurrency
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -155,10 +156,10 @@ fun ProductItem(product: Product, onAddToCart: () -> Unit) {
     }
 }
 
-fun formatCurrency(amount: Double): String {
-    val format = NumberFormat.getCurrencyInstance(Locale("id", "ID")) // Indonesian Rupiah
-    return format.format(amount)
-}
+//fun formatCurrency(amount: Double): String {
+//    val format = NumberFormat.getCurrencyInstance(Locale("id", "ID")) // Indonesian Rupiah
+//    return format.format(amount)
+//}
 
 @Preview(showBackground = true)
 @Composable

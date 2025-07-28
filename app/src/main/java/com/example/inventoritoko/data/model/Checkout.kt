@@ -7,6 +7,11 @@ import com.google.gson.annotations.SerializedName
 //    // but if it does, define it here.
 //    // For now, assuming it processes the current user's cart.
 //)
+data class DirectCheckoutRequest(
+    @SerializedName("productId")
+    val productId: Int,
+    val quantity: Int
+)
 
 data class CheckoutResponse(
     val message: String,

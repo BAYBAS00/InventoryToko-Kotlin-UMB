@@ -1,3 +1,4 @@
+// RegisterScreen.kt
 package com.example.inventoritoko.presentation.screens
 
 import android.widget.Toast
@@ -24,7 +25,7 @@ import com.example.inventoritoko.data.model.RegisterRequest
 import com.example.inventoritoko.presentation.navigation.Screen
 import com.example.inventoritoko.presentation.viewmodel.AuthViewModel
 import com.example.inventoritoko.presentation.viewmodel.AuthViewModelFactory
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.launch // Tetap diperlukan untuk Snackbar error
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,12 +45,13 @@ fun RegisterScreen(navController: NavController) {
     LaunchedEffect(registerState) {
         when (registerState) {
             is AuthViewModel.AuthResult.Success -> {
-                scope.launch {
-                    snackbarHostState.showSnackbar(
-                        message = (registerState as AuthViewModel.AuthResult.Success).message,
-                        duration = SnackbarDuration.Short
-                    )
-                }
+                // Menggunakan Toast untuk pesan sukses
+                Toast.makeText(
+                    context,
+                    (registerState as AuthViewModel.AuthResult.Success).message,
+                    Toast.LENGTH_LONG
+                ).show()
+
                 navController.popBackStack()
                 authViewModel.clearRegisterState()
             }
@@ -68,6 +70,7 @@ fun RegisterScreen(navController: NavController) {
 
     Box(modifier = Modifier.fillMaxSize()) {
         Scaffold(
+            snackbarHost = { SnackbarHost(snackbarHostState) } // SnackbarHost tetap ada untuk pesan error
         ) { paddingValues ->
             Column(
                 modifier = Modifier
@@ -85,7 +88,7 @@ fun RegisterScreen(navController: NavController) {
                     modifier = Modifier.padding(
                         top = 64.dp,
                         bottom = 32.dp
-                    ) // Tambahkan padding atas untuk judul
+                    )
                 )
                 OutlinedTextField(
                     value = username,
@@ -122,13 +125,17 @@ fun RegisterScreen(navController: NavController) {
                 Spacer(modifier = Modifier.height(16.dp))
                 Button(
                     onClick = {
-                        authViewModel.register(
-                            RegisterRequest(
-                                username,
-                                email,
-                                password
+                        if (username.isNotBlank() && email.isNotBlank() && password.isNotBlank()) {
+                            authViewModel.register(
+                                RegisterRequest(
+                                    username,
+                                    email,
+                                    password
+                                )
                             )
-                        )
+                        } else {
+                            Toast.makeText(context, "Semua kolom harus diisi", Toast.LENGTH_SHORT).show()
+                        }
                     },
                     modifier = Modifier.fillMaxWidth(),
                     enabled = registerState !is AuthViewModel.AuthResult.Loading
@@ -148,13 +155,9 @@ fun RegisterScreen(navController: NavController) {
                 }
             }
         }
-        SnackbarHost(
-            hostState = snackbarHostState,
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(WindowInsets.ime.asPaddingValues())
-                .padding(WindowInsets.navigationBars.asPaddingValues())
-        )
+        // SnackbarHost tetap ada untuk error, jadi tidak perlu dihapus dari Box
+        // Jika Anda hanya ingin Toast untuk semua pesan, maka SnackbarHost ini bisa dihapus
+        // dan semua AuthResult.Error juga diubah ke Toast.
     }
 }
 

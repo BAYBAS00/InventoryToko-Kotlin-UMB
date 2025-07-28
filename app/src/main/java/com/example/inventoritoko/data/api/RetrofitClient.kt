@@ -1,3 +1,4 @@
+// RetrofitClient.kt
 package com.example.inventoritoko.data.api
 
 import android.content.Context
@@ -13,8 +14,10 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
 import android.util.Log
+// Hapus import com.example.inventoritoko.utils.DoubleAdapter
+// Hapus import com.example.inventoritoko.utils.BigDecimalAdapter
+import com.google.gson.GsonBuilder // Tetap gunakan GsonBuilder
 
-// DataStore untuk menyimpan token
 val Context.dataStore by preferencesDataStore(name = "auth_prefs")
 
 object RetrofitClient {
@@ -26,12 +29,10 @@ object RetrofitClient {
         if (INSTANCE == null) {
             synchronized(this) {
                 if (INSTANCE == null) {
-                    // Interceptor untuk logging
                     val logging = HttpLoggingInterceptor().apply {
                         setLevel(HttpLoggingInterceptor.Level.BODY)
                     }
 
-                    // Interceptor untuk menambahkan token ke header
                     val authInterceptor = Interceptor { chain ->
                         val originalRequest = chain.request()
                         val token = runBlocking {
@@ -41,7 +42,7 @@ object RetrofitClient {
                         val requestBuilder = originalRequest.newBuilder()
                         token?.let {
                             requestBuilder.header("Authorization", "Bearer $it")
-                            Log.d(TAG, "Adding Authorization header: Bearer $it") // LOGGING HEADER
+                            Log.d(TAG, "Adding Authorization header: Bearer $it")
                         } ?: run {
                             Log.w(TAG, "No token found in DataStore. Authorization header not added.")
                         }
@@ -53,10 +54,15 @@ object RetrofitClient {
                         .addInterceptor(authInterceptor)
                         .build()
 
+                    val gson = GsonBuilder()
+                        .setLenient()
+                        // <--- HAPUS SEMUA registerTypeAdapter UNTUK Double/BigDecimal DI SINI
+                        .create()
+
                     INSTANCE = Retrofit.Builder()
                         .baseUrl(Constants.BASE_URL)
                         .client(okHttpClient)
-                        .addConverterFactory(GsonConverterFactory.create())
+                        .addConverterFactory(GsonConverterFactory.create(gson))
                         .build()
                         .create(ApiService::class.java)
                 }

@@ -1,8 +1,11 @@
+// ApiService.kt
 package com.example.inventoritoko.data.api
 
 import com.example.inventoritoko.data.model.*
 import retrofit2.Response
 import retrofit2.http.*
+import okhttp3.ResponseBody // Import ResponseBody
+import com.example.inventoritoko.data.model.PurchaseHistoryItem // Import model baru
 
 interface ApiService {
 
@@ -23,8 +26,11 @@ interface ApiService {
     @GET("inventory/products")
     suspend fun getProducts(): Response<List<Product>>
 
+    @GET("inventory/products/{productId}")
+    suspend fun getProductById(@Path("productId") productId: Int): Response<Product>
+
     @POST("inventory/cart")
-    suspend fun addToCart(@Body request: AddToCartRequest): Response<AuthResponse> // Assuming a generic success response
+    suspend fun addToCart(@Body request: AddToCartRequest): Response<AuthResponse>
 
     @PUT("inventory/cart/{productId}")
     suspend fun updateCartItemQuantity(
@@ -43,4 +49,10 @@ interface ApiService {
 
     @POST("inventory/checkout")
     suspend fun checkout(): Response<CheckoutResponse>
+
+    @POST("inventory/direct-checkout")
+    suspend fun directCheckout(@Body request: DirectCheckoutRequest): Response<CheckoutResponse>
+
+    @GET("inventory/history")
+    suspend fun getPurchaseHistory(): Response<ResponseBody> // Tetap ResponseBody untuk parsing manual
 }

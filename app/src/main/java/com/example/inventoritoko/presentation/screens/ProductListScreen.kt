@@ -1,12 +1,15 @@
+// ProductListScreen.kt
 package com.example.inventoritoko.presentation.screens
 
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -15,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -29,8 +33,8 @@ import com.example.inventoritoko.presentation.viewmodel.InventoryViewModel
 import com.example.inventoritoko.presentation.viewmodel.InventoryViewModelFactory
 import com.example.inventoritoko.utils.Constants
 import com.example.inventoritoko.utils.formatCurrency
-import java.text.NumberFormat
-import java.util.Locale
+import android.util.Log
+import androidx.navigation.compose.currentBackStackEntryAsState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -38,11 +42,13 @@ fun ProductListScreen(navController: NavController) {
     val context = LocalContext.current
     val inventoryViewModel: InventoryViewModel = viewModel(factory = InventoryViewModelFactory(context))
     val authViewModel: AuthViewModel = viewModel(factory = AuthViewModelFactory(context))
+
     val products by inventoryViewModel.products.collectAsState()
     val loading by inventoryViewModel.loading.collectAsState()
     val error by inventoryViewModel.error.collectAsState()
     val addToCartResult by inventoryViewModel.addToCartResult.collectAsState()
 
+    // Observer untuk error dari InventoryViewModel
     LaunchedEffect(error) {
         error?.let {
             Toast.makeText(context, it, Toast.LENGTH_LONG).show()
@@ -50,6 +56,7 @@ fun ProductListScreen(navController: NavController) {
         }
     }
 
+    // Observer untuk hasil penambahan ke keranjang
     LaunchedEffect(addToCartResult) {
         addToCartResult?.let { success ->
             if (success) {
@@ -66,8 +73,17 @@ fun ProductListScreen(navController: NavController) {
             TopAppBar(
                 title = { Text("Produk") },
                 actions = {
-                    IconButton(onClick = { navController.navigate(Screen.Cart.route) }) {
-                        Icon(Icons.Filled.ShoppingCart, contentDescription = "Cart")
+                    IconButton(onClick = {
+                        Log.d("ProductListScreen", "Navigating to PurchaseHistoryScreen")
+                        navController.navigate(Screen.PurchaseHistory.route)
+                    }) {
+                        Icon(Icons.Filled.History, contentDescription = "Riwayat Pembelian")
+                    }
+                    IconButton(onClick = {
+                        Log.d("ProductListScreen", "Navigating to CartScreen")
+                        navController.navigate(Screen.Cart.route)
+                    }) {
+                        Icon(Icons.Filled.ShoppingCart, contentDescription = "Keranjang")
                     }
                     IconButton(onClick = {
                         authViewModel.logout()
@@ -99,13 +115,16 @@ fun ProductListScreen(navController: NavController) {
                     Text("Tidak ada produk yang tersedia.")
                 }
             } else {
-                LazyColumn(
-                    contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    contentPadding = PaddingValues(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxSize()
                 ) {
                     items(products) { product ->
-                        ProductItem(product = product) {
-                            inventoryViewModel.addToCart(product.id, 1) // Add 1 quantity by default
+                        ProductGridItem(product = product) {
+                            navController.navigate(Screen.ProductDetail.createRoute(product.id))
                         }
                     }
                 }
@@ -116,59 +135,78 @@ fun ProductListScreen(navController: NavController) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProductItem(product: Product, onAddToCart: () -> Unit) {
+fun ProductGridItem(product: Product, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { /* Handle product detail navigation if needed */ }
+            .clickable { onClick() }
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+        Column(
+            modifier = Modifier.fillMaxWidth()
         ) {
-            val fullImageUrl = if (product.image != null) {
-                // Pastikan BASE_URL diakhiri dengan '/' dan product.image diawali dengan '/'
-                // atau hapus '/' di product.image jika BASE_URL sudah menanganinya
-                "${Constants.BASE_URL.removeSuffix("/")}${product.image}"
-            } else {
-                "https://placehold.co/100x100/E0E0E0/000000?text=No+Image"
-            }
-            AsyncImage(
-                model = fullImageUrl,
-                contentDescription = product.name,
+            Box(
                 modifier = Modifier
-                    .size(80.dp)
-                    .padding(end = 16.dp),
-                contentScale = ContentScale.Crop
-            )
-            Column(modifier = Modifier.weight(1f)) {
-                Text(text = product.name, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                Text(text = formatCurrency(product.price), style = MaterialTheme.typography.bodyMedium)
-                Text(text = "Stock: ${product.stock}", style = MaterialTheme.typography.bodySmall)
+                    .fillMaxWidth()
+                    .height(150.dp)
+            ) {
+                val fullImageUrl = if (product.image != null) {
+                    "${Constants.BASE_URL.removeSuffix("/")}${product.image}"
+                } else {
+                    Constants.NO_IMAGE_PLACEHOLDER_URL
+                }
+                AsyncImage(
+                    model = fullImageUrl,
+                    contentDescription = product.name,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
             }
-            Spacer(modifier = Modifier.width(16.dp))
-            Button(onClick = onAddToCart) {
-                Text("Add to Cart")
+
+            Column(
+                modifier = Modifier.padding(8.dp)
+            ) {
+                Text(
+                    text = product.name,
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Normal,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = formatCurrency(product.price),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "Stok: ${product.stock}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
         }
     }
 }
 
-//fun formatCurrency(amount: Double): String {
-//    val format = NumberFormat.getCurrencyInstance(Locale("id", "ID")) // Indonesian Rupiah
-//    return format.format(amount)
-//}
-
-@Preview(showBackground = true)
+@Preview(showBackground = true, widthDp = 360)
 @Composable
 fun PreviewProductListScreen() {
     ProductListScreen(rememberNavController())
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, widthDp = 180)
 @Composable
-fun PreviewProductItem() {
-    ProductItem(product = Product(1, "Sample Product", 15000.0, 10, null)) {}
+fun PreviewProductGridItem() {
+    ProductGridItem(
+        product = Product(
+            id = 1,
+            name = "Nama Produk Contoh yang Panjang Sekali untuk Menguji Overflow",
+            price = 223110.0,
+            stock = 15,
+            image = null,
+            description = "Ini adalah deskripsi produk contoh."
+        )
+    ) {}
 }

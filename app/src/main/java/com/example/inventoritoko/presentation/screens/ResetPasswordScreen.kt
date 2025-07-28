@@ -1,3 +1,4 @@
+// ResetPasswordScreen.kt
 package com.example.inventoritoko.presentation.screens
 
 import android.widget.Toast
@@ -24,7 +25,7 @@ import com.example.inventoritoko.data.model.ResetPasswordRequest
 import com.example.inventoritoko.presentation.navigation.Screen
 import com.example.inventoritoko.presentation.viewmodel.AuthViewModel
 import com.example.inventoritoko.presentation.viewmodel.AuthViewModelFactory
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.launch // Tetap diperlukan untuk Snackbar error
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,7 +37,7 @@ fun ResetPasswordScreen(navController: NavController) {
     var token by remember { mutableStateOf("") }
     var newPassword by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
-    var newPasswordVisible by remember { mutableStateOf(false) } // State baru
+    var newPasswordVisible by remember { mutableStateOf(false) }
     var confirmPasswordVisible by remember { mutableStateOf(false) }
 
     val resetPasswordState by authViewModel.resetPasswordState.collectAsState()
@@ -46,12 +47,13 @@ fun ResetPasswordScreen(navController: NavController) {
     LaunchedEffect(resetPasswordState) {
         when (resetPasswordState) {
             is AuthViewModel.AuthResult.Success -> {
-                scope.launch {
-                    snackbarHostState.showSnackbar(
-                        message = (resetPasswordState as AuthViewModel.AuthResult.Success).message,
-                        duration = SnackbarDuration.Short
-                    )
-                }
+                // Menggunakan Toast untuk pesan sukses
+                Toast.makeText(
+                    context,
+                    (resetPasswordState as AuthViewModel.AuthResult.Success).message,
+                    Toast.LENGTH_LONG
+                ).show()
+
                 navController.navigate(Screen.Login.route) {
                     popUpTo(Screen.Login.route) { inclusive = true }
                 }
@@ -72,6 +74,7 @@ fun ResetPasswordScreen(navController: NavController) {
 
     Box(modifier = Modifier.fillMaxSize()) {
         Scaffold(
+            snackbarHost = { SnackbarHost(snackbarHostState) } // SnackbarHost tetap ada untuk pesan error
         ) { paddingValues ->
             Column(
                 modifier = Modifier
@@ -89,7 +92,7 @@ fun ResetPasswordScreen(navController: NavController) {
                     modifier = Modifier.padding(
                         top = 64.dp,
                         bottom = 32.dp
-                    ) // Tambahkan padding atas untuk judul
+                    )
                 )
                 OutlinedTextField(
                     value = email,
@@ -145,14 +148,18 @@ fun ResetPasswordScreen(navController: NavController) {
                 Spacer(modifier = Modifier.height(16.dp))
                 Button(
                     onClick = {
-                        authViewModel.resetPassword(
-                            ResetPasswordRequest(
-                                email,
-                                token,
-                                newPassword,
-                                confirmPassword
+                        if (email.isNotBlank() && token.isNotBlank() && newPassword.isNotBlank() && confirmPassword.isNotBlank()) {
+                            authViewModel.resetPassword(
+                                ResetPasswordRequest(
+                                    email,
+                                    token,
+                                    newPassword,
+                                    confirmPassword
+                                )
                             )
-                        )
+                        } else {
+                            Toast.makeText(context, "Semua kolom harus diisi", Toast.LENGTH_SHORT).show()
+                        }
                     },
                     modifier = Modifier.fillMaxWidth(),
                     enabled = resetPasswordState !is AuthViewModel.AuthResult.Loading
@@ -172,13 +179,7 @@ fun ResetPasswordScreen(navController: NavController) {
                 }
             }
         }
-        SnackbarHost(
-            hostState = snackbarHostState,
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(WindowInsets.ime.asPaddingValues())
-                .padding(WindowInsets.navigationBars.asPaddingValues())
-        )
+        // SnackbarHost tetap ada untuk error, jadi tidak perlu dihapus dari Box
     }
 }
 

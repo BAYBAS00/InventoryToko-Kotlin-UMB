@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <!-- Ganti "10.0.2.2" dengan IP address lokal Anda jika Anda tidak menggunakan emulator -->
+        <domain includeSubdomains="true">10.0.2.2</domain>
+        <!-- Jika Anda menggunakan IP lain (misalnya, IP komputer Anda di jaringan lokal), tambahkan di sini -->
+         <domain includeSubdomains="true">0.0.0.0</domain>
+    </domain-config>
+</network-security-config>

@@ -58,7 +58,7 @@ Aplikasi ini dikhususkan untuk **customer** dan menyediakan fitur-fitur utama be
 
 ---
 
-## 🔑 Alur Login & Register
+## 🔑 Alur Aplikasi
 
 <img src="ss/UAS-PEMROGRAMAN-4.drawio.png" alt="Flow Login Register" />
 

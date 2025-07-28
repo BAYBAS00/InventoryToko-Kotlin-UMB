@@ -1,103 +1,107 @@
-# Inventori Toko | UAS Pemrograman UMBanten
-Aplikasi Inventori Toko sederhana berbasis Android menggunakan Kotlin.
+# 📦 Inventori Toko | UAS Pemrograman UMBanten
 
-## DATA DIRI
+Aplikasi Inventori Toko sederhana berbasis Android menggunakan **Kotlin** dan **Jetpack Compose**, dibuat sebagai proyek UAS untuk mata kuliah Pemrograman di Universitas Muhammadiyah Banten.
+
 ---
-**Nama**: Bayu Sebastian
-**NIM**: 220320001
-**Prodi**: Informatika
 
-## Fitur Aplikasi
+## 🧑‍💻 Data Diri
+
+| Nama           | NIM         | Prodi       |
+|----------------|-------------|-------------|
+| Bayu Sebastian | 220320001   | Informatika |
+
 ---
-Aplikasi ini dikhususkan untuk customer dengan menyediakan berbagai fitur inti untuk melihat produk, keranjang belanja, dan riwayat pembelian, serta fungsionalitas autentikasi pengguna:
 
-**Autentikasi Pengguna**:
-- Registrasi: Pengguna baru dapat membuat akun dengan username, email, dan password.
-- Login: Pengguna yang sudah terdaftar dapat masuk ke aplikasi.
-- Lupa Password: Memungkinkan pengguna untuk meminta token reset password melalui email.
-- Reset Password: Memungkinkan pengguna untuk mengatur ulang password menggunakan token yang diterima.
-- Logout: Mengakhiri sesi pengguna dan menghapus token autentikasi.
+## ✨ Fitur Aplikasi
 
-**Menampilkan Produk**:
-- Daftar Produk: Menampilkan daftar semua produk yang tersedia dengan nama, harga, stok, dan gambar.
-- Detail Produk: Menampilkan informasi lebih rinci tentang produk tertentu.
+Aplikasi ini dikhususkan untuk **customer** dan menyediakan fitur-fitur utama berikut:
 
-**Keranjang Belanja**:
-- Tambah ke Keranjang: Pengguna dapat menambahkan produk dari daftar produk ke keranjang belanja mereka. Jika produk sudah ada, kuantitas akan diperbarui.
-- Lihat Keranjang: Menampilkan semua item di keranjang dengan kuantitas dan subtotal.
-- Perbarui Kuantitas: Memungkinkan pengguna untuk menambah atau mengurangi kuantitas produk di keranjang.
-- Hapus Item dari Keranjang: Menghapus produk tertentu dari keranjang.
-- Kosongkan Keranjang: Menghapus semua item dari keranjang.
+### 🔐 Autentikasi Pengguna
+- **Registrasi**: Daftar akun dengan username, email, dan password.
+- **Login**: Masuk dengan akun terdaftar.
+- **Lupa Password**: Meminta token reset melalui email.
+- **Reset Password**: Atur ulang password dengan token.
+- **Logout**: Keluar dari akun dan hapus token autentikasi.
 
-**Proses Pembelian**:
-- Beli Langsung: Melakukan pembelian tanpa dimasukkan ke keranjang terlebih dahulu.
-- Checkout: Memproses pembelian item yang dipilih, mengurangi stok produk, dan mencatat transaksi.
-- Riwayat Pembelian: Menampilkan daftar semua transaksi dan produk yang pernah dibeli oleh pengguna.
+### 🛍️ Produk & Detail
+- **Daftar Produk**: Lihat seluruh produk lengkap dengan nama, harga, stok, dan gambar.
+- **Detail Produk**: Lihat informasi rinci dari produk yang dipilih.
 
+### 🛒 Keranjang Belanja
+- **Tambah ke Keranjang**: Tambahkan produk ke keranjang atau perbarui kuantitas.
+- **Lihat Keranjang**: Lihat semua item beserta subtotal.
+- **Perbarui Kuantitas**: Tambah atau kurangi jumlah item.
+- **Hapus Item**: Hapus produk dari keranjang.
+- **Kosongkan Keranjang**: Hapus semua item sekaligus.
 
-## Teknologi yang Digunakan
+### 💳 Pembelian & Transaksi
+- **Beli Langsung**: Checkout produk langsung dari detail.
+- **Checkout**: Selesaikan pembelian semua item di keranjang.
+- **Riwayat Pembelian**: Lihat semua transaksi sebelumnya.
+
 ---
-**Backend**:
-Rest-Api -> https://github.com/BAYBAS00/inventoriToko-api.git
 
-**Frontend (Aplikasi Android)**:
-- Platform Android: Sistem operasi target.
-- Kotlin: Bahasa pemrograman utama.
-- Jetpack Compose: Toolkit UI deklaratif.
-- MVVM (Model-View-ViewModel): Pola arsitektur.
-- Retrofit: HTTP client untuk API calls.
-- Gson: Library untuk parsing JSON.
-- OkHttp: HTTP client yang efisien (digunakan oleh Retrofit).
-- Coil: Library pemuatan gambar.
-- Preferences DataStore: Untuk penyimpanan data persisten (token autentikasi).
-- Android Navigation Component: Untuk navigasi antar layar.
-- Kotlin Coroutines: Untuk manajemen asinkron.
+## 🛠️ Teknologi yang Digunakan
 
+### 🔙 Backend
+- [REST API (ExpressJS + MySQL)](https://github.com/BAYBAS00/inventoriToko-api.git)
 
-## Alur Login & Register
+### 📱 Android Frontend
+- **Kotlin** – Bahasa utama
+- **Jetpack Compose** – Deklaratif UI Toolkit
+- **MVVM** – Arsitektur Aplikasi
+- **Retrofit + OkHttp + Gson** – Untuk koneksi API dan parsing JSON
+- **Coil** – Library pemuatan gambar
+- **Preferences DataStore** – Menyimpan token autentikasi
+- **Navigation Component** – Navigasi antar layar
+- **Kotlin Coroutines** – Pengelolaan proses async
+
 ---
-<img src="ss/UAS-PEMROGRAMAN-4.drawio.png" />
 
+## 🔑 Alur Login & Register
 
-## UI Aplikasi pada Emulator
+<img src="ss/UAS-PEMROGRAMAN-4.drawio.png" alt="Flow Login Register" />
+
 ---
-OTENTIKASI
+
+## 📱 UI Aplikasi (Emulator)
+
+### 🔐 Otentikasi
+
+| Login | Register |
+|-------|----------|
+| <img src="ss/login.png" width="300"/> | <img src="ss/regis.png" width="300"/> |
+
+| Lupa Password | Reset Password |
+|---------------|----------------|
+| <img src="ss/lupa-pass.png" width="300"/> | <img src="ss/reset-pass.png" width="300"/> |
+
 ---
-**Login**
-<img src="ss/login.png" width="400"/>
 
-**Register**
-<img src="ss/regis.png" width="400"/>
+### 📦 Inventori
 
-**Lupa Passwword**
-<img src="ss/lupa-pass.png" width="400"/>
+| Daftar Produk | Detail Produk |
+|---------------|---------------|
+| <img src="ss/daftar-produk.png" width="300"/> | <img src="ss/detail-produk.png" width="300"/> |
 
-**Reset Password**
-<img src="ss/reset-pass.png" width="400"/>
+| Keranjang | Checkout |
+|-----------|----------|
+| <img src="ss/keranjang.png" width="300"/> | <img src="ss/cekot.png" width="300"/> |
 
-INVENTORI
+| Pembayaran | Riwayat Pembelian |
+|------------|-------------------|
+| <img src="ss/pembayaran.png" width="300"/> | <img src="ss/riwayat-beli.png" width="300"/> |
+
 ---
-**Daftar Produk**
-<img src="ss/daftar-produk.png" width="400"/>
 
-**Detail Produk**
-<img src="ss/detail-produk.png" width="400"/>
+## ⚠️ Catatan
 
-**Keranjang**
-<img src="ss/keranjang.png" width="400"/>
+> Gantilah IP `0.0.0.0` yang terdapat di file `Constants.kt` dan `network_security_config.xml` dengan alamat IP lokal perangkat kamu (misalnya: `192.168.1.10`) agar aplikasi dapat terhubung dengan server backend lokal.
 
-**Checkout**
-<img src="ss/cekot.png" width="400"/>
-
-**Pembayaran**
-<img src="ss/pembayaran.png" width="400"/>
-
-**Riwayat Pembelian**
-<img src="ss/riwayat-beli.png" width="400"/>
-
-
-### Note
 ---
-Ubah code "0.0.0.0" pada file Constants.kt dan network_security_config.xml dengan ip address device anda sendiri.
 
+## 📚 Lisensi
 
+Proyek ini dibuat untuk keperluan pembelajaran dan tidak untuk tujuan komersial.
+
+---
